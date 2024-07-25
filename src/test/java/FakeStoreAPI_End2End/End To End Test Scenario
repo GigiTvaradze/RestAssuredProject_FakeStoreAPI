@@ -1,0 +1,15 @@
+
+ * User and Cart Management Workflow
+
+ * This class demonstrates the workflow for managing users, carts, and products. The workflow includes:
+ * 1. Adding a new user
+ * 2. Retrieving and asserting user carts
+ * 3. Adding a new product
+ * 4. Retrieving and asserting product data
+ * 5. Adding a new cart
+ * 6. Updating a cart
+ * 7. Retrieving and asserting updated cart data
+ * 8. Deleting a cart
+ * 9. Deleting a product
+ * 10. Deleting a user
+ * 11. Asserting the deletion of user, product, and cart
