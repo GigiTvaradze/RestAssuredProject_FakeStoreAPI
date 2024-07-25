@@ -1,11 +1,16 @@
 package FakeStoreAPI_End2End;
 
+import AddNewProductPojoClass.addNewProductPojoClass;
 import AddNewUserPojoClass.addNewUserPojoClass;
 import AddNewUserPojoClass.addressPojoClass;
 import AddNewUserPojoClass.geoLocationPojoClass;
 import AddNewUserPojoClass.namePojoClass;
 import io.restassured.path.json.JsonPath;
 import org.testng.annotations.Test;
+
+import java.util.HashMap;
+
+import static org.hamcrest.Matchers.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -65,20 +70,40 @@ public class e2e_TestCase {
          *
          * Retrieves the carts for a user and asserts that a new user has no carts.
          */
-
+        given().pathParam("userId", id).log().all()
+                .when().get("https://fakestoreapi.com/carts/user/{userId}")
+                .then().log().all().assertThat().statusCode(200)
+                .body("", hasSize(0));
 
         /**
          * Step 3: Add New Product
          *
          * Adds a new product to the system.
          */
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("title", "Test Product");
+        map.put("price", "13.22");
+        map.put("description", "Test Product By Me");
+        map.put("image", "https://i.pravatar.cc");
+        map.put("category", "Cars");
 
+
+        addNewProductPojoClass request = given().contentType("application/json").body(map).when().post("https://fakestoreapi.com/products")
+                .then().log().all().assertThat().statusCode(200).extract().as(addNewProductPojoClass.class);
+
+        String productId = request.getId();
+        String title = request.getTitle();
+        String price = request.getPrice();
+        String description = request.getDescription();
+        String image = request.getImage();
+        String category = request.getCategory();
 
         /**
          * Step 4: Get a Single Product and Assert that Data are Correct
          *
          * Retrieves a single product and asserts that the data is correct.
          */
+
 
         /**
          * Step 5: Add a New Cart
