@@ -1,14 +1,20 @@
 package FakeStoreAPI_End2End;
 
+import AddNewCartPojoClass.addNewCartPojoClass;
+import AddNewCartPojoClass.productsPojoClass;
 import AddNewProductPojoClass.addNewProductPojoClass;
 import AddNewUserPojoClass.addNewUserPojoClass;
 import AddNewUserPojoClass.addressPojoClass;
 import AddNewUserPojoClass.geoLocationPojoClass;
 import AddNewUserPojoClass.namePojoClass;
+import io.cucumber.java.an.E;
 import io.restassured.path.json.JsonPath;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 
@@ -70,9 +76,17 @@ public class e2e_TestCase {
          *
          * Retrieves the carts for a user and asserts that a new user has no carts.
          */
-        given().pathParam("userId", id).log().all()
-                .when().get("https://fakestoreapi.com/carts/user/{userId}")
-                .then().log().all().assertThat().statusCode(200)
+
+        given().pathParam("userId", id)
+                .log()
+                .all()
+                .when()
+                .get("https://fakestoreapi.com/carts/user/{userId}")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(200)
                 .body("", hasSize(0));
 
         /**
@@ -80,6 +94,7 @@ public class e2e_TestCase {
          *
          * Adds a new product to the system.
          */
+
         HashMap<String,Object> map = new HashMap<>();
         map.put("title", "Test Product");
         map.put("price", "13.22");
@@ -87,9 +102,17 @@ public class e2e_TestCase {
         map.put("image", "https://i.pravatar.cc");
         map.put("category", "Cars");
 
-
-        addNewProductPojoClass request = given().contentType("application/json").body(map).when().post("https://fakestoreapi.com/products")
-                .then().log().all().assertThat().statusCode(200).extract().as(addNewProductPojoClass.class);
+        addNewProductPojoClass request = given()
+                .contentType("application/json")
+                .body(map)
+                .when()
+                .post("https://fakestoreapi.com/products")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(200)
+                .extract().as(addNewProductPojoClass.class);
 
         String productId = request.getId();
         String title = request.getTitle();
@@ -104,12 +127,44 @@ public class e2e_TestCase {
          * Retrieves a single product and asserts that the data is correct.
          */
 
+        Assert.assertEquals(title,"Test Product");
+        Assert.assertEquals(price,"13.22");
+        Assert.assertEquals(description,"Test Product By Me");
+        Assert.assertEquals(image,"https://i.pravatar.cc");
+        Assert.assertEquals(category,"Cars");
 
         /**
          * Step 5: Add a New Cart
          *
          * Adds a new cart to the system for a user.
          */
+
+        addNewCartPojoClass cart = new addNewCartPojoClass();
+        cart.setUserId(id);
+        cart.setDate("2020-02-03");
+
+        // Create a product object and set its properties
+        productsPojoClass products = new productsPojoClass();
+        products.setProductId(productId);
+        products.setQuantity("24");
+
+        // Create a list and add the product object to it
+        List<productsPojoClass> productList = new ArrayList<>();
+        productList.add(products);
+
+        // Set the products list in the cart
+        cart.setProducts(productList);
+
+        given()
+                .contentType("application/json")
+                .body(cart)
+                .when()
+                .log()
+                .all()
+                .post("https://fakestoreapi.com/carts")
+                .then()
+                .assertThat()
+                .statusCode(200);
 
 
         /**
