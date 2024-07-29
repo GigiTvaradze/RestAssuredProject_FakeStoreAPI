@@ -7,9 +7,6 @@
  * 3. Adding a new product
  * 4. Retrieving and asserting product data
  * 5. Adding a new cart
- * 6. Updating a cart
- * 7. Retrieving and asserting updated cart data
- * 8. Deleting a cart
- * 9. Deleting a product
- * 10. Deleting a user
- * 11. Asserting the deletion of user, product, and cart
+ * 6. Deleting a cart
+ * 7. Deleting a product
+ * 8. Deleting a user

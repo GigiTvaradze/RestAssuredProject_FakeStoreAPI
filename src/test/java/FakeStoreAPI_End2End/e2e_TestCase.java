@@ -7,7 +7,6 @@ import AddNewUserPojoClass.addNewUserPojoClass;
 import AddNewUserPojoClass.addressPojoClass;
 import AddNewUserPojoClass.geoLocationPojoClass;
 import AddNewUserPojoClass.namePojoClass;
-import io.cucumber.java.an.E;
 import io.restassured.path.json.JsonPath;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -23,6 +22,7 @@ import static io.restassured.RestAssured.given;
 public class e2e_TestCase {
     @Test
     public void userCartProductWorkflow() {
+
         /**
          * Step 1: Add a New User
          *
@@ -155,7 +155,7 @@ public class e2e_TestCase {
         // Set the products list in the cart
         cart.setProducts(productList);
 
-        given()
+        String newCartRequest = given()
                 .contentType("application/json")
                 .body(cart)
                 .when()
@@ -164,48 +164,46 @@ public class e2e_TestCase {
                 .post("https://fakestoreapi.com/carts")
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .statusCode(200).extract().asString();
 
-
-        /**
-         * Step 6: Update a Cart
-         *
-         * Updates the details of an existing cart.
-         */
-
+        JsonPath js2 = ReUsableMethods.rawToJson(newCartRequest);
+        String newCartId = js2.getString("id");
 
         /**
-         * Step 7: Get a Single Cart and Assert that Cart is Updated
-         *
-         * Retrieves a single cart and asserts that the cart has been updated.
-         */
-
-
-        /**
-         * Step 8: Delete a Cart
+         * Step 6: Delete a Cart
          *
          * Deletes a specified cart from the system.
          */
 
+        given().pathParam("cardId", newCartId)
+                .when()
+                .delete("https://fakestoreapi.com/carts/{cardId}")
+                .then()
+                .assertThat().statusCode(200);
 
         /**
-         * Step 9: Delete a Product
+         * Step 7: Delete a Product
          *
          * Deletes a specified product from the system.
          */
 
+        given().pathParam("productId", productId)
+                .when()
+                .delete("https://fakestoreapi.com/products/{productId}")
+                .then()
+                .assertThat().statusCode(200);
+
 
         /**
-         * Step 10: Delete a User
+         * Step 8: Delete a User
          *
          * Deletes a specified user from the system.
          */
 
-
-        /**
-         * Step 11: Assert that User, Product, and Cart are Deleted
-         *
-         * Asserts that the user, product, and cart have been successfully deleted from the system.
-         */
+        given().pathParam("userId", id)
+                .when()
+                .delete("https://fakestoreapi.com/users/{userId}")
+                .then()
+                .assertThat().statusCode(200);
     }
 }
